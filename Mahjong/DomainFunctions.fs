@@ -31,3 +31,29 @@ let createPlayers : Player list =
     [| for x in 1..4 do
         yield { Hand = Set.empty; Id = x }|] |> List.ofArray 
 
+let createDeck (gameState:GameState) =
+    let tiles = createTileSet |> shuffle |> List.ofArray 
+    { gameState with Deck = { Deck = tiles } }
+
+let drawStartingHands gameState =
+    let players,newDeck = createPlayers |> List.mapFold ( fun (state:Deck) el -> state.drawStartingHand el ) gameState.Deck
+    { gameState with Players = players; Deck = newDeck }
+
+let startTurn gameState =
+    let tile,deck = gameState.Deck.tryTakeTile
+    let currentPlayer = gameState.getCurrentPlayer
+    let playerState =
+        match tile with
+        | Some t -> 
+            match currentPlayer.tryAddTile t with
+            | Some p -> p
+            | None -> currentPlayer
+        | None -> currentPlayer
+    let playersState = gameState.updatePlayer playerState
+    { gameState with Deck = deck; Players = playersState }
+
+let endTurn (gameState:GameState) =
+    gameState.advanceCurrentPlayer
+
+let quitGame gameState = 
+    { gameState with GameStatus = Ending }

@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="DomainTypes.fs" />
     <Compile Include="DomainFunctions.fs" />
+    <Compile Include="UIFunctions.fs" />
     <Compile Include="UseCases.fs" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Program.fs" />

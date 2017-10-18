@@ -27,6 +27,8 @@ type Player = { Hand: Tile Set; Id: int }
             match this.Hand.Count < 14 with
             | true -> { this with Hand = Set.add tile this.Hand }|> Some
             | false -> None
+        member this.tryDiscardTile tile = 
+            this.Hand.Remove tile
 
 type Deck = { Deck: Tile list}
     with
@@ -46,8 +48,20 @@ type Deck = { Deck: Tile list}
                                 Some t
                             | (None, _d) -> None ]
             ({ player with Hand = (List.filter (fun (x:Tile option) -> x.IsSome) hand) |> List.map (fun x -> x.Value) |> Set.ofList }, deckMut)
-        
-type GameState = { Deck: Deck; Discard: Tile list; Players: Player list }
+
+type GameStatus = InProgress | Ending
+
+type GameState = { Deck: Deck; Discard: Tile list; Players: Player list; GameStatus: GameStatus ; CurrentPlayer: int}
     with 
+        member this.getCurrentPlayer =
+            this.Players.[this.CurrentPlayer]
+        member this.advanceCurrentPlayer =
+            let nextPlayer = 
+                match this.CurrentPlayer with
+                | 3 -> 0
+                | i -> i + 1 
+            { this with CurrentPlayer = nextPlayer }
+        member this.updatePlayer player =
+            List.map (fun x -> if player.Id = x.Id then player else x ) this.Players
         static member empty = 
-            { Deck = { Deck = List.Empty }; Discard = List.Empty; Players = List.Empty}
+            { Deck = { Deck = List.Empty }; Discard = List.Empty; Players = List.empty; GameStatus = InProgress; CurrentPlayer = 0}
