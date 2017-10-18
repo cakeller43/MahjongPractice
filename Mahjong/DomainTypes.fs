@@ -8,6 +8,7 @@ type Rank = | One | Two | Three | Four | Five | Six | Seven | Eight | Nine
         static member ranks = [One; Two; Three; Four; Five; Six; Seven; Eight; Nine]
 
 type Simple = Suit * Rank
+
 type Wind = | East | South | West | North
     with
         static member winds = [East; South; West; North]
@@ -19,6 +20,7 @@ type Bonus = | Season | Flower
         static member bonuses = [Season; Flower]
 
 type TileType = | Simple of Simple | Wind of Wind | Dragon of Dragon | Bonus of Bonus
+
 type Tile = { Id: int; TileType: TileType}
 
 type Player = { Hand: Tile Set; Id: int }
@@ -29,6 +31,8 @@ type Player = { Hand: Tile Set; Id: int }
             | false -> None
         member this.tryDiscardTile tile = 
             this.Hand.Remove tile
+        member this.tryFind id =
+            this.Hand |> Set.toList |> List.tryFind (fun x -> x.Id = id)
 
 type Deck = { Deck: Tile list}
     with
@@ -37,7 +41,7 @@ type Deck = { Deck: Tile list}
             | true -> (None, this)
             | false -> (Some this.Deck.Head, { this with Deck = this.Deck.Tail })
 
-        // must be a better way to use the tryTakeTile method but also not need to mutate to pass state along... fold maybe?
+        // Question: Seems like there must be a better way to use the tryTakeTile method but also not need to mutate to pass state along... fold maybe?
         member this.drawStartingHand player =
             let mutable deckMut = this;
             let hand = 

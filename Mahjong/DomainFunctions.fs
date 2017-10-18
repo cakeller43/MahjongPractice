@@ -18,7 +18,6 @@ let createTileSet =
 
 let shuffle (tileSet:Tile[]) =
     let rand = new System.Random()
-    //doing some mutation here, maybe this is fine?
     let swap (arr: _[]) first second =
         let tmp = arr.[first]
         arr.[first] <- arr.[second]
@@ -39,6 +38,7 @@ let drawStartingHands gameState =
     let players,newDeck = createPlayers |> List.mapFold ( fun (state:Deck) el -> state.drawStartingHand el ) gameState.Deck
     { gameState with Players = players; Deck = newDeck }
 
+// Summary: Draw Tile then update the players Hand state.
 let startTurn gameState =
     let tile,deck = gameState.Deck.tryTakeTile
     let currentPlayer = gameState.getCurrentPlayer
